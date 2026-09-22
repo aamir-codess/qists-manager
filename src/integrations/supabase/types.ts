@@ -14,7 +14,172 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      customers: {
+        Row: {
+          address: string | null
+          cnic: string | null
+          created_at: string
+          id: string
+          name: string
+          owner_id: string
+          phone: string
+        }
+        Insert: {
+          address?: string | null
+          cnic?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          owner_id: string
+          phone: string
+        }
+        Update: {
+          address?: string | null
+          cnic?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          owner_id?: string
+          phone?: string
+        }
+        Relationships: []
+      }
+      installments: {
+        Row: {
+          amount: number
+          created_at: string
+          due_date: string
+          id: string
+          installment_no: number
+          owner_id: string
+          paid_amount: number
+          paid_at: string | null
+          sale_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          due_date: string
+          id?: string
+          installment_no: number
+          owner_id: string
+          paid_amount?: number
+          paid_at?: string | null
+          sale_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          due_date?: string
+          id?: string
+          installment_no?: number
+          owner_id?: string
+          paid_amount?: number
+          paid_at?: string | null
+          sale_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "installments_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "sales"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          installment_id: string
+          owner_id: string
+          paid_on: string
+          sale_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          installment_id: string
+          owner_id: string
+          paid_on?: string
+          sale_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          installment_id?: string
+          owner_id?: string
+          paid_on?: string
+          sale_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_installment_id_fkey"
+            columns: ["installment_id"]
+            isOneToOne: false
+            referencedRelation: "installments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "sales"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales: {
+        Row: {
+          created_at: string
+          customer_id: string
+          down_payment: number
+          id: string
+          monthly_amount: number
+          months: number
+          owner_id: string
+          product_name: string
+          start_date: string
+          total_price: number
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          down_payment?: number
+          id?: string
+          monthly_amount: number
+          months: number
+          owner_id: string
+          product_name: string
+          start_date: string
+          total_price: number
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          down_payment?: number
+          id?: string
+          monthly_amount?: number
+          months?: number
+          owner_id?: string
+          product_name?: string
+          start_date?: string
+          total_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
