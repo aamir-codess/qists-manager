@@ -52,25 +52,61 @@ function CustomerDetail() {
     try {
       const { data: userData } = await supabase.auth.getUser();
       const ownerId = userData.user!.id;
-      const newPaid = Number(payFor.paid_amount) + value;
-      const { error } = await supabase.from("payments").insert({
-        owner_id: ownerId,
-        installment_id: payFor.id,
-        sale_id: payFor.sale_id,
-        amount: value,
-        paid_on: paidOn,
-      });
+
+      // Targets: this installment, then later unpaid ones from the same sale.
+      const targets = installments
+        .filter(
+          (i) =>
+            i.sale_id === payFor.sale_id &&
+            (i.id === payFor.id || i.installment_no > payFor.installment_no) &&
+            Number(i.paid_amount) < Number(i.amount) - 0.5,
+        )
+        .sort((a, b) => a.installment_no - b.installment_no);
+
+      let remaining = value;
+      const applied: { inst: Installment; amount: number; newPaid: number }[] = [];
+      for (const inst of targets) {
+        if (remaining <= 0.5) break;
+        const due = Math.max(0, Number(inst.amount) - Number(inst.paid_amount));
+        const part = Math.min(due, remaining);
+        remaining -= part;
+        applied.push({ inst, amount: part, newPaid: Number(inst.paid_amount) + part });
+      }
+
+      if (applied.length === 0) {
+        toast.error("All installments for this sale are already paid");
+        setBusy(false);
+        return;
+      }
+
+      const { error } = await supabase.from("payments").insert(
+        applied.map((a) => ({
+          owner_id: ownerId,
+          installment_id: a.inst.id,
+          sale_id: a.inst.sale_id,
+          amount: a.amount,
+          paid_on: paidOn,
+        })),
+      );
       if (error) throw error;
-      const { error: updateError } = await supabase
-        .from("installments")
-        .update({
-          paid_amount: newPaid,
-          paid_at: newPaid >= Number(payFor.amount) - 0.5 ? paidOn : null,
-        })
-        .eq("id", payFor.id);
-      if (updateError) throw updateError;
+
+      for (const a of applied) {
+        const { error: updateError } = await supabase
+          .from("installments")
+          .update({
+            paid_amount: a.newPaid,
+            paid_at: a.newPaid >= Number(a.inst.amount) - 0.5 ? paidOn : null,
+          })
+          .eq("id", a.inst.id);
+        if (updateError) throw updateError;
+      }
+
       await queryClient.invalidateQueries();
-      toast.success("Payment recorded");
+      const spread = applied.length > 1 ? ` across ${applied.length} installments` : "";
+      toast.success(`Payment recorded${spread}`);
+      if (remaining > 0.5) {
+        toast.info(`${formatRs(remaining)} was not applied — no unpaid installments left`);
+      }
       setPayFor(null);
       setAmount("");
     } catch (err) {
@@ -79,6 +115,8 @@ function CustomerDetail() {
       setBusy(false);
     }
   }
+
+
 
   if (isLoading) {
     return (
