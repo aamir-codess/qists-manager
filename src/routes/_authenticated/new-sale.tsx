@@ -38,10 +38,22 @@ function NewSale() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!customerId) return toast.error("Pick a customer first");
-    if (monthsNum < 1 || monthsNum > 120) return toast.error("Months must be between 1 and 120");
-    if (totalNum <= 0) return toast.error("Enter the total price");
-    if (downNum > totalNum) return toast.error("Down payment cannot exceed total price");
+    if (!customerId) {
+      toast.error("Pick a customer first");
+      return;
+    }
+    if (monthsNum < 1 || monthsNum > 120) {
+      toast.error("Months must be between 1 and 120");
+      return;
+    }
+    if (totalNum <= 0) {
+      toast.error("Enter the total price");
+      return;
+    }
+    if (downNum > totalNum) {
+      toast.error("Down payment cannot exceed total price");
+      return;
+    }
     setBusy(true);
     try {
       const { data: userData } = await supabase.auth.getUser();

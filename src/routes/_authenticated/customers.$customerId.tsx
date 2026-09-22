@@ -44,7 +44,10 @@ function CustomerDetail() {
     e.preventDefault();
     if (!payFor) return;
     const value = Number(amount);
-    if (!value || value <= 0) return toast.error("Enter a valid amount");
+    if (!value || value <= 0) {
+      toast.error("Enter a valid amount");
+      return;
+    }
     setBusy(true);
     try {
       const { data: userData } = await supabase.auth.getUser();
