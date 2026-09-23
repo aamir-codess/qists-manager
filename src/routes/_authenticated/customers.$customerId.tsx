@@ -238,17 +238,28 @@ function CustomerDetail() {
                       <div className="min-w-0">
                         <p className="text-sm font-semibold">Month {inst.installment_no}</p>
                         <p className="mt-0.5 truncate text-xs text-ink/50">Due {formatDate(inst.due_date)}</p>
+                        {Number(inst.paid_amount) > 0.5 && status !== "paid" ? (
+                          <p className="mt-0.5 text-xs text-brand">
+                            {formatRs(Number(inst.paid_amount))} paid of {formatRs(Number(inst.amount))}
+                          </p>
+                        ) : null}
+                        {Number(inst.paid_amount) > Number(inst.amount) + 0.5 ? (
+                          <p className="mt-0.5 text-xs font-semibold text-brand">
+                            +{formatRs(Number(inst.paid_amount) - Number(inst.amount))} extra paid
+                          </p>
+                        ) : null}
                       </div>
                       <div className="shrink-0 text-right">
                         <p
                           className={`font-display text-lg font-semibold ${status === "overdue" ? "text-danger" : ""}`}
                         >
-                          {formatRs(Number(inst.amount))}
+                          {formatRs(status === "paid" ? Number(inst.amount) : remaining)}
                         </p>
+                        <p className="text-[11px] text-ink/45">{status === "paid" ? "settled" : "due now"}</p>
                         <span
                           className={`mt-1 inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold capitalize ${statusStyles[status]}`}
                         >
-                          {status === "upcoming" ? "Unpaid" : status}
+                          {status === "upcoming" ? (Number(inst.paid_amount) > 0.5 ? "Partial" : "Unpaid") : status}
                         </span>
                       </div>
                     </div>
