@@ -6,6 +6,7 @@ import { AppShell, GlassCard } from "@/components/AppShell";
 import { useCustomers } from "@/lib/queries";
 import type { Customer } from "@/lib/installments";
 import { supabase } from "@/integrations/supabase/client";
+import { updateCustomer } from "@/lib/secure.functions";
 import { Plus, Search, Pencil, ChevronRight } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/customers/")({
@@ -43,8 +44,7 @@ function CustomersPage() {
       };
       if (!payload.name || !payload.phone) throw new Error("Name and phone are required");
       if (form.id) {
-        const { error } = await supabase.from("customers").update(payload).eq("id", form.id);
-        if (error) throw error;
+        await updateCustomer({ data: { id: form.id, ...payload } });
       } else {
         const { data: userData } = await supabase.auth.getUser();
         const { error } = await supabase.from("customers").insert({ ...payload, owner_id: userData.user!.id });

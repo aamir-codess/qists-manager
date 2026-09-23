@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { AppShell, GlassCard } from "@/components/AppShell";
 import { useCustomers } from "@/lib/queries";
 import { buildSchedule, formatRs, monthlyAmount, todayISO } from "@/lib/installments";
-import { supabase } from "@/integrations/supabase/client";
+import { createSale } from "@/lib/secure.functions";
 
 export const Route = createFileRoute("/_authenticated/new-sale")({
   head: () => ({
@@ -56,12 +56,14 @@ function NewSale() {
     }
     setBusy(true);
     try {
-      const { data: userData } = await supabase.auth.getUser();
-      const ownerId = userData.user!.id;
-      const { data: sale, error } = await supabase
-        .from("sales")
-        .insert({
-          owner_id: ownerId,
+      const schedule = buildSchedule({
+        totalPrice: totalNum,
+        downPayment: downNum,
+        months: monthsNum,
+        startDate,
+      }).map((r) => ({ installment_no: r.installment_no, due_date: r.due_date, amount: Number(r.amount) }));
+      await createSale({
+        data: {
           customer_id: customerId,
           product_name: product.trim().slice(0, 120),
           total_price: totalNum,
@@ -69,19 +71,9 @@ function NewSale() {
           months: monthsNum,
           start_date: startDate,
           monthly_amount: monthly,
-        })
-        .select()
-        .single();
-      if (error) throw error;
-
-      const rows = buildSchedule({
-        totalPrice: totalNum,
-        downPayment: downNum,
-        months: monthsNum,
-        startDate,
-      }).map((r) => ({ ...r, owner_id: ownerId, sale_id: sale.id }));
-      const { error: instError } = await supabase.from("installments").insert(rows);
-      if (instError) throw instError;
+          schedule,
+        },
+      });
 
       await queryClient.invalidateQueries();
       toast.success("Sale created with payment schedule");
