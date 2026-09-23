@@ -73,11 +73,21 @@ function CustomerDetail() {
         applied.push({ inst, amount: part, newPaid: Number(inst.paid_amount) + part });
       }
 
-      if (applied.length === 0) {
-        toast.error("All installments for this sale are already paid");
-        setBusy(false);
-        return;
+      // Any leftover becomes credit: stored on the last applied (or last) installment of the sale.
+      if (remaining > 0.5) {
+        const saleRows = installments
+          .filter((i) => i.sale_id === payFor.sale_id)
+          .sort((a, b) => a.installment_no - b.installment_no);
+        const lastInst = saleRows[saleRows.length - 1]!;
+        const existing = applied.find((a) => a.inst.id === lastInst.id);
+        if (existing) {
+          existing.amount += remaining;
+          existing.newPaid += remaining;
+        } else {
+          applied.push({ inst: lastInst, amount: remaining, newPaid: Number(lastInst.paid_amount) + remaining });
+        }
       }
+
 
       const { error } = await supabase.from("payments").insert(
         applied.map((a) => ({
@@ -105,7 +115,7 @@ function CustomerDetail() {
       const spread = applied.length > 1 ? ` across ${applied.length} installments` : "";
       toast.success(`Payment recorded${spread}`);
       if (remaining > 0.5) {
-        toast.info(`${formatRs(remaining)} was not applied — no unpaid installments left`);
+        toast.info(`${formatRs(remaining)} extra saved as credit balance`);
       }
       setPayFor(null);
       setAmount("");
@@ -142,6 +152,10 @@ function CustomerDetail() {
     (sum, i) => sum + Math.max(0, Number(i.amount) - Number(i.paid_amount)),
     0,
   );
+  const credit = installments.reduce(
+    (sum, i) => sum + Math.max(0, Number(i.paid_amount) - Number(i.amount)),
+    0,
+  );
 
   return (
     <AppShell
@@ -161,6 +175,13 @@ function CustomerDetail() {
         <GlassCard>
           <p className="text-xs font-medium text-ink/55">Outstanding balance</p>
           <p className="mt-1 font-display text-3xl font-semibold leading-none">{formatRs(outstanding)}</p>
+          {credit > 0.5 ? (
+            <div className="mt-3 rounded-xl bg-brand/10 px-3 py-2 ring-1 ring-brand/25">
+              <p className="text-xs font-semibold uppercase tracking-wide text-brand">Overpaid · Credit balance</p>
+              <p className="font-display text-xl font-semibold text-brand">{formatRs(credit)}</p>
+              <p className="text-xs text-ink/55">Customer has paid this much more than owed.</p>
+            </div>
+          ) : null}
           <div className="mt-3 space-y-1 text-xs text-ink/55">
             {customer.address ? <p>{customer.address}</p> : null}
             {customer.cnic ? <p>ID: {customer.cnic}</p> : null}
