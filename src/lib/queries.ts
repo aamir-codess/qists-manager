@@ -1,4 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { getCustomerDetail } from "./secure.functions";
 import { supabase } from "@/integrations/supabase/client";
 import type { Customer, Installment, Sale } from "./installments";
 
@@ -58,25 +60,16 @@ export function usePayments() {
 }
 
 export function useCustomerDetail(customerId: string) {
+  const fetchDetail = useServerFn(getCustomerDetail);
   return useQuery({
     queryKey: ["customer", customerId],
+    retry: false,
     queryFn: async () => {
-      const [customerRes, salesRes, instRes] = await Promise.all([
-        supabase.from("customers").select("*").eq("id", customerId).maybeSingle(),
-        supabase.from("sales").select("*").eq("customer_id", customerId).order("created_at"),
-        supabase
-          .from("installments")
-          .select("*, sales!inner(customer_id)")
-          .eq("sales.customer_id", customerId)
-          .order("installment_no"),
-      ]);
-      if (customerRes.error) throw customerRes.error;
-      if (salesRes.error) throw salesRes.error;
-      if (instRes.error) throw instRes.error;
+      const res = await fetchDetail({ data: { customerId } });
       return {
-        customer: customerRes.data as Customer | null,
-        sales: (salesRes.data ?? []) as Sale[],
-        installments: (instRes.data ?? []) as unknown as Installment[],
+        customer: res.customer as Customer | null,
+        sales: res.sales as Sale[],
+        installments: res.installments as Installment[],
       };
     },
   });

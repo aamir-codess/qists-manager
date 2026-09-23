@@ -6,7 +6,8 @@ import { AppShell, GlassCard } from "@/components/AppShell";
 import { useCustomerDetail } from "@/lib/queries";
 import { formatDate, formatRs, statusOf, todayISO, whatsappLink } from "@/lib/installments";
 import type { Installment } from "@/lib/installments";
-import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { recordPayments } from "@/lib/secure.functions";
 import { ChevronLeft, MessageCircle } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/customers/$customerId")({
@@ -31,6 +32,7 @@ function CustomerDetail() {
   const { customerId } = Route.useParams();
   const { data, isLoading } = useCustomerDetail(customerId);
   const queryClient = useQueryClient();
+  const savePayments = useServerFn(recordPayments);
   const [payFor, setPayFor] = useState<Installment | null>(null);
   const [amount, setAmount] = useState("");
   const [paidOn, setPaidOn] = useState(todayISO());
@@ -50,8 +52,6 @@ function CustomerDetail() {
     }
     setBusy(true);
     try {
-      const { data: userData } = await supabase.auth.getUser();
-      const ownerId = userData.user!.id;
 
       // Targets: this installment, then later unpaid ones from the same sale.
       const targets = installments
@@ -88,28 +88,12 @@ function CustomerDetail() {
         }
       }
 
-
-      const { error } = await supabase.from("payments").insert(
-        applied.map((a) => ({
-          owner_id: ownerId,
-          installment_id: a.inst.id,
-          sale_id: a.inst.sale_id,
-          amount: a.amount,
+      await savePayments({
+        data: {
           paid_on: paidOn,
-        })),
-      );
-      if (error) throw error;
-
-      for (const a of applied) {
-        const { error: updateError } = await supabase
-          .from("installments")
-          .update({
-            paid_amount: a.newPaid,
-            paid_at: a.newPaid >= Number(a.inst.amount) - 0.5 ? paidOn : null,
-          })
-          .eq("id", a.inst.id);
-        if (updateError) throw updateError;
-      }
+          items: applied.map((a) => ({ installment_id: a.inst.id, amount: a.amount })),
+        },
+      });
 
       await queryClient.invalidateQueries();
       const spread = applied.length > 1 ? ` across ${applied.length} installments` : "";
@@ -141,7 +125,10 @@ function CustomerDetail() {
       <AppShell title="Customer">
         <div className="px-4 pt-4">
           <GlassCard>
-            <p className="text-sm text-ink/55">This customer was not found.</p>
+            <p className="text-sm font-semibold text-danger">Customer not found or access denied.</p>
+            <Link to="/customers" className="mt-2 inline-block text-sm font-semibold text-brand">
+              Back to customers
+            </Link>
           </GlassCard>
         </div>
       </AppShell>
