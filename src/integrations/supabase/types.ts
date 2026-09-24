@@ -88,6 +88,36 @@ export type Database = {
           },
         ]
       }
+      login_attempts: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          ip: string | null
+          locked: boolean
+          success: boolean
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          ip?: string | null
+          locked?: boolean
+          success: boolean
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          ip?: string | null
+          locked?: boolean
+          success?: boolean
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount: number
