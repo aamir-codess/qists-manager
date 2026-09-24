@@ -2,6 +2,8 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { signInWithLimit } from "@/lib/auth.functions";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -21,6 +23,8 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const [lockMsg, setLockMsg] = useState<string | null>(null);
+  const signIn = useServerFn(signInWithLimit);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -46,7 +50,17 @@ function AuthPage() {
         }
         navigate({ to: "/dashboard", replace: true });
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        setLockMsg(null);
+        const res = await signIn({ data: { email, password } });
+        if (!res.ok) {
+          if (res.locked) setLockMsg(res.message);
+          else toast.error(res.message);
+          return;
+        }
+        const { error } = await supabase.auth.setSession({
+          access_token: res.access_token,
+          refresh_token: res.refresh_token,
+        });
         if (error) throw error;
         navigate({ to: "/dashboard", replace: true });
       }
@@ -70,6 +84,12 @@ function AuthPage() {
           {mode === "signin" ? "Sign in to your shop account." : "Create your shop account."}
         </p>
 
+        {lockMsg && mode === "signin" ? (
+          <div role="alert" className="mt-6 rounded-2xl bg-danger/10 p-4 text-sm text-danger ring-1 ring-danger/25">
+            <p className="font-semibold">Account temporarily locked</p>
+            <p className="mt-1">{lockMsg}</p>
+          </div>
+        ) : null}
         <form onSubmit={handleSubmit} className="mt-6 rounded-2xl bg-white/60 p-4 ring-1 ring-black/5 backdrop-blur-md">
           <label className="block text-xs font-medium text-ink/55" htmlFor="email">
             Email
