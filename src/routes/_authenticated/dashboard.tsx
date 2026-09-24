@@ -5,6 +5,7 @@ import { useInstallments, usePayments } from "@/lib/queries";
 import { formatRs, formatShortDate, statusOf, todayISO } from "@/lib/installments";
 import { supabase } from "@/integrations/supabase/client";
 import { LogOut } from "lucide-react";
+import { LoginActivity } from "@/components/LoginActivity";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -165,6 +166,7 @@ function Dashboard() {
           </div>
         )}
       </section>
+      <LoginActivity />
     </AppShell>
   );
 }
