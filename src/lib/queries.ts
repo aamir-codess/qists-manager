@@ -65,6 +65,11 @@ export function useCustomerDetail(customerId: string) {
     queryKey: ["customer", customerId],
     retry: false,
     queryFn: async () => {
+      // Invalid or manually altered IDs should resolve to the in-app not-found
+      // state instead of reaching server validation and the global error page.
+      if (!zUuidPattern.test(customerId)) {
+        return { customer: null, sales: [], installments: [] };
+      }
       const res = await fetchDetail({ data: { customerId } });
       return {
         customer: res.customer as Customer | null,
@@ -74,3 +79,5 @@ export function useCustomerDetail(customerId: string) {
     },
   });
 }
+
+const zUuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
