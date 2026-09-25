@@ -77,7 +77,7 @@ function NewSale() {
 
       await queryClient.invalidateQueries();
       toast.success("Sale created with payment schedule");
-      navigate({ to: "/customers/$customerId", params: { customerId } });
+      navigate({ to: "/customer/$customerId", params: { customerId } });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not create the sale");
     } finally {

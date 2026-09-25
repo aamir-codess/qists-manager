@@ -15,8 +15,8 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedNewSaleRouteImport } from './routes/_authenticated/new-sale'
 import { Route as AuthenticatedRemindersRouteImport } from './routes/_authenticated/reminders'
+import { Route as AuthenticatedCustomerCustomerIdRouteImport } from './routes/_authenticated/customer.$customerId'
 import { Route as AuthenticatedCustomersIndexRouteImport } from './routes/_authenticated/customers.index'
-import { Route as AuthenticatedCustomersCustomerIdRouteImport } from './routes/_authenticated/customers.$customerId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -47,16 +47,16 @@ const AuthenticatedRemindersRoute = AuthenticatedRemindersRouteImport.update({
   path: '/reminders',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCustomerCustomerIdRoute =
+  AuthenticatedCustomerCustomerIdRouteImport.update({
+    id: '/customer/$customerId',
+    path: '/customer/$customerId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedCustomersIndexRoute =
   AuthenticatedCustomersIndexRouteImport.update({
     id: '/customers/',
     path: '/customers/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedCustomersCustomerIdRoute =
-  AuthenticatedCustomersCustomerIdRouteImport.update({
-    id: '/customers/$customerId',
-    path: '/customers/$customerId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
@@ -66,7 +66,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/new-sale': typeof AuthenticatedNewSaleRoute
   '/reminders': typeof AuthenticatedRemindersRoute
-  '/customers/$customerId': typeof AuthenticatedCustomersCustomerIdRoute
+  '/customer/$customerId': typeof AuthenticatedCustomerCustomerIdRoute
   '/customers/': typeof AuthenticatedCustomersIndexRoute
 }
 export interface FileRoutesByTo {
@@ -75,7 +75,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/new-sale': typeof AuthenticatedNewSaleRoute
   '/reminders': typeof AuthenticatedRemindersRoute
-  '/customers/$customerId': typeof AuthenticatedCustomersCustomerIdRoute
+  '/customer/$customerId': typeof AuthenticatedCustomerCustomerIdRoute
   '/customers': typeof AuthenticatedCustomersIndexRoute
 }
 export interface FileRoutesById {
@@ -86,7 +86,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/new-sale': typeof AuthenticatedNewSaleRoute
   '/_authenticated/reminders': typeof AuthenticatedRemindersRoute
-  '/_authenticated/customers/$customerId': typeof AuthenticatedCustomersCustomerIdRoute
+  '/_authenticated/customer/$customerId': typeof AuthenticatedCustomerCustomerIdRoute
   '/_authenticated/customers/': typeof AuthenticatedCustomersIndexRoute
 }
 export interface FileRouteTypes {
@@ -97,7 +97,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/new-sale'
     | '/reminders'
-    | '/customers/$customerId'
+    | '/customer/$customerId'
     | '/customers/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -106,7 +106,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/new-sale'
     | '/reminders'
-    | '/customers/$customerId'
+    | '/customer/$customerId'
     | '/customers'
   id:
     | '__root__'
@@ -116,7 +116,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/new-sale'
     | '/_authenticated/reminders'
-    | '/_authenticated/customers/$customerId'
+    | '/_authenticated/customer/$customerId'
     | '/_authenticated/customers/'
   fileRoutesById: FileRoutesById
 }
@@ -170,18 +170,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRemindersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/customer/$customerId': {
+      id: '/_authenticated/customer/$customerId'
+      path: '/customer/$customerId'
+      fullPath: '/customer/$customerId'
+      preLoaderRoute: typeof AuthenticatedCustomerCustomerIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/customers/': {
       id: '/_authenticated/customers/'
       path: '/customers'
       fullPath: '/customers/'
       preLoaderRoute: typeof AuthenticatedCustomersIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/customers/$customerId': {
-      id: '/_authenticated/customers/$customerId'
-      path: '/customers/$customerId'
-      fullPath: '/customers/$customerId'
-      preLoaderRoute: typeof AuthenticatedCustomersCustomerIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
   }
@@ -191,7 +191,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedNewSaleRoute: typeof AuthenticatedNewSaleRoute
   AuthenticatedRemindersRoute: typeof AuthenticatedRemindersRoute
-  AuthenticatedCustomersCustomerIdRoute: typeof AuthenticatedCustomersCustomerIdRoute
+  AuthenticatedCustomerCustomerIdRoute: typeof AuthenticatedCustomerCustomerIdRoute
   AuthenticatedCustomersIndexRoute: typeof AuthenticatedCustomersIndexRoute
 }
 
@@ -199,7 +199,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedNewSaleRoute: AuthenticatedNewSaleRoute,
   AuthenticatedRemindersRoute: AuthenticatedRemindersRoute,
-  AuthenticatedCustomersCustomerIdRoute: AuthenticatedCustomersCustomerIdRoute,
+  AuthenticatedCustomerCustomerIdRoute: AuthenticatedCustomerCustomerIdRoute,
   AuthenticatedCustomersIndexRoute: AuthenticatedCustomersIndexRoute,
 }
 

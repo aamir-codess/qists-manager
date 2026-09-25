@@ -11,7 +11,7 @@ import { recordPayments } from "@/lib/secure.functions";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, LayoutDashboard, MessageCircle, ShieldX } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/customers/$customerId")({
+export const Route = createFileRoute("/_authenticated/customer/$customerId")({
   head: () => ({
     meta: [
       { title: "Customer — InstallmentTracker" },
@@ -125,15 +125,15 @@ function CustomerDetail() {
 
   if (isError || !customer) {
     return (
-      <AppShell title="Customer Not Found" subtitle="Access denied">
+      <AppShell title="Access Denied" subtitle="Customer not found">
         <section className="flex min-h-[65vh] items-center px-4 py-8">
           <GlassCard className="w-full px-5 py-8 text-center">
             <div className="mx-auto grid size-14 place-items-center rounded-full bg-danger/10 text-danger">
               <ShieldX className="size-7" aria-hidden="true" />
             </div>
-            <h2 className="mt-4 font-display text-xl font-semibold">Customer Not Found</h2>
+            <h2 className="mt-4 font-display text-xl font-semibold">Access Denied</h2>
             <p className="mx-auto mt-2 max-w-xs text-sm leading-6 text-ink/55">
-              This customer doesn’t exist or you don’t have permission to view it.
+              This customer does not belong to your account, or it doesn’t exist.
             </p>
             <Button asChild size="lg" className="mt-6 h-12 w-full rounded-xl bg-brand text-brand-foreground hover:bg-brand/90">
               <Link to="/dashboard">
