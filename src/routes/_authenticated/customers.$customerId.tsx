@@ -8,7 +8,8 @@ import { formatDate, formatRs, statusOf, todayISO, whatsappLink } from "@/lib/in
 import type { Installment } from "@/lib/installments";
 import { useServerFn } from "@tanstack/react-start";
 import { recordPayments } from "@/lib/secure.functions";
-import { ChevronLeft, MessageCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, LayoutDashboard, MessageCircle, ShieldX } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/customers/$customerId")({
   head: () => ({
@@ -17,6 +18,8 @@ export const Route = createFileRoute("/_authenticated/customers/$customerId")({
       { name: "description", content: "Sale details, installment schedule and payment recording for a customer." },
       { property: "og:title", content: "Customer — InstallmentTracker" },
       { property: "og:description", content: "Sale details, installment schedule and payment recording." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: CustomerDetail,
@@ -30,7 +33,7 @@ const statusStyles = {
 
 function CustomerDetail() {
   const { customerId } = Route.useParams();
-  const { data, isLoading } = useCustomerDetail(customerId);
+  const { data, isLoading, isError } = useCustomerDetail(customerId);
   const queryClient = useQueryClient();
   const savePayments = useServerFn(recordPayments);
   const [payFor, setPayFor] = useState<Installment | null>(null);
@@ -120,17 +123,26 @@ function CustomerDetail() {
     );
   }
 
-  if (!customer) {
+  if (isError || !customer) {
     return (
-      <AppShell title="Customer">
-        <div className="px-4 pt-4">
-          <GlassCard>
-            <p className="text-sm font-semibold text-danger">Customer not found or access denied.</p>
-            <Link to="/customers" className="mt-2 inline-block text-sm font-semibold text-brand">
-              Back to customers
-            </Link>
+      <AppShell title="Customer Not Found" subtitle="Access denied">
+        <section className="flex min-h-[65vh] items-center px-4 py-8">
+          <GlassCard className="w-full px-5 py-8 text-center">
+            <div className="mx-auto grid size-14 place-items-center rounded-full bg-danger/10 text-danger">
+              <ShieldX className="size-7" aria-hidden="true" />
+            </div>
+            <h2 className="mt-4 font-display text-xl font-semibold">Customer Not Found</h2>
+            <p className="mx-auto mt-2 max-w-xs text-sm leading-6 text-ink/55">
+              This customer doesn’t exist or you don’t have permission to view it.
+            </p>
+            <Button asChild size="lg" className="mt-6 h-12 w-full rounded-xl bg-brand text-brand-foreground hover:bg-brand/90">
+              <Link to="/dashboard">
+                <LayoutDashboard aria-hidden="true" />
+                Return to Dashboard
+              </Link>
+            </Button>
           </GlassCard>
-        </div>
+        </section>
       </AppShell>
     );
   }
