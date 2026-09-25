@@ -123,7 +123,7 @@ function CustomersPage() {
         ) : (
           customers.map((c: Customer) => (
             <div key={c.id} className="flex items-center gap-2 rounded-2xl bg-white/60 p-3.5 ring-1 ring-black/5 backdrop-blur-md">
-              <Link to="/customers/$customerId" params={{ customerId: c.id }} className="min-w-0 flex-1">
+              <Link to="/customer/$customerId" params={{ customerId: c.id }} className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold">{c.name}</p>
                 <p className="mt-0.5 truncate text-xs text-ink/50">
                   {c.phone}
@@ -141,7 +141,7 @@ function CustomersPage() {
                 <Pencil className="size-4" />
               </button>
               <Link
-                to="/customers/$customerId"
+                to="/customer/$customerId"
                 params={{ customerId: c.id }}
                 aria-label={`Open ${c.name}`}
                 className="grid size-10 shrink-0 place-items-center rounded-full bg-white text-ink/50 ring-1 ring-black/5"

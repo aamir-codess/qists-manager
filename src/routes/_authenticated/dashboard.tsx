@@ -112,7 +112,7 @@ function Dashboard() {
             {overdue.map((inst) => (
               <Link
                 key={inst.id}
-                to="/customers/$customerId"
+                to="/customer/$customerId"
                 params={{ customerId: inst.sales?.customers?.id ?? "" }}
                 className="block rounded-2xl bg-white/60 p-3.5 ring-1 ring-danger/20 backdrop-blur-md"
               >
@@ -148,7 +148,7 @@ function Dashboard() {
             {dueThisWeek.map((inst) => (
               <Link
                 key={inst.id}
-                to="/customers/$customerId"
+                to="/customer/$customerId"
                 params={{ customerId: inst.sales?.customers?.id ?? "" }}
                 className="block rounded-2xl bg-white/60 p-3.5 ring-1 ring-black/5 backdrop-blur-md"
               >

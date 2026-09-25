@@ -11,7 +11,7 @@ import { recordPayments } from "@/lib/secure.functions";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, LayoutDashboard, MessageCircle, ShieldX } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/customers/$customerId")({
+export const Route = createFileRoute("/_authenticated/customer/$customerId")({
   head: () => ({
     meta: [
       { title: "Customer — InstallmentTracker" },
