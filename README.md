@@ -1,29 +1,30 @@
-# Welcome to your Lovable project
+# Installment Hub
 
-This project was built with [Lovable](https://lovable.dev).
+Installment Hub is a mobile-friendly web app for small shops that sell products on monthly installments. Shop owners manage their customers, automatically generate a fair monthly payment schedule when a sale is made, record payments as they come in, and send WhatsApp reminders when an installment is due — all from one simple dashboard.
 
-## Build with Lovable
+## Features
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+- **Customer management** — add, edit, and search customers by name, phone, address, or CNIC/ID number.
+- **Automatic installment schedule generation** — enter a total price, down payment, and number of months; the app calculates the monthly amount and builds the full schedule (the last month absorbs any rounding difference so totals always match).
+- **Payment recording with automatic balance and overpayment handling** — payments are applied to the selected installment first; any extra amount rolls forward into the next unpaid installments automatically.
+- **Overpaid/credit balance tracking** — if a customer pays more than they owe in total, the extra is tracked and shown as a clear credit balance, even after the final installment is settled.
+- **WhatsApp payment reminders** — one tap opens WhatsApp with a pre-filled, polite payment reminder message for the due installment.
+- **Secure login with brute-force protection** — accounts are temporarily locked after repeated failed sign-in attempts, and every attempt is logged so owners can review their sign-in activity.
+- **Data isolation between shop owners** — every record is scoped to its owner with row-level security, so shops only ever see their own customers, sales, and payments.
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+## Security
 
-## Development
+This project was manually tested for common vulnerabilities, including insecure direct object reference (IDOR) and cross-account data access. Issues found during testing were identified and fixed.
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+## Tech Stack
 
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
-```
+- React 19 + TypeScript
+- TanStack Start (SSR, file-based routing, server functions)
+- Tailwind CSS v4
+- Supabase (PostgreSQL database, authentication, row-level security)
 
-## Built with
+## Live App
 
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
+https://qists-manager.lovable.app
+
+Built with Lovable.
