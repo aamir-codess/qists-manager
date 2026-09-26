@@ -183,7 +183,10 @@ function CustomerDetail() {
           ) : null}
           <div className="mt-3 space-y-1 text-xs text-ink/55">
             {customer.address ? <p>{customer.address}</p> : null}
-            {customer.cnic ? <p>ID: {customer.cnic}</p> : null}
+            {customer.cnic ? <p>CNIC: {customer.cnic}</p> : null}
+            <p className="break-all">
+              Customer ID: <span className="font-mono text-ink/70">{customer.id}</span>
+            </p>
           </div>
         </GlassCard>
       </section>
