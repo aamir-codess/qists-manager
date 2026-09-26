@@ -1,50 +1,30 @@
 # Installment Hub
 
-Build a mobile-friendly web app called "InstallmentTracker" for small shops that sell products on monthly installments.
+Installment Hub is a mobile-friendly web app for small shops that sell products on monthly installments. Shop owners manage their customers, automatically generate a fair monthly payment schedule when a sale is made, record payments as they come in, and send WhatsApp reminders when an installment is due — all from one simple dashboard.
 
+## Features
 
+- **Customer management** — add, edit, and search customers by name, phone, address, or CNIC/ID number.
+- **Automatic installment schedule generation** — enter a total price, down payment, and number of months; the app calculates the monthly amount and builds the full schedule (the last month absorbs any rounding difference so totals always match).
+- **Payment recording with automatic balance and overpayment handling** — payments are applied to the selected installment first; any extra amount rolls forward into the next unpaid installments automatically.
+- **Overpaid/credit balance tracking** — if a customer pays more than they owe in total, the extra is tracked and shown as a clear credit balance, even after the final installment is settled.
+- **WhatsApp payment reminders** — one tap opens WhatsApp with a pre-filled, polite payment reminder message for the due installment.
+- **Secure login with brute-force protection** — accounts are temporarily locked after repeated failed sign-in attempts, and every attempt is logged so owners can review their sign-in activity.
+- **Data isolation between shop owners** — every record is scoped to its owner with row-level security, so shops only ever see their own customers, sales, and payments.
 
-Login: email and password for the shop owner.
+## Security
 
+This project was manually tested for common vulnerabilities, including insecure direct object reference (IDOR) and cross-account data access. Issues found during testing were identified and fixed.
 
+## Tech Stack
 
-Pages:
+- React 19 + TypeScript
+- TanStack Start (SSR, file-based routing, server functions)
+- Tailwind CSS v4
+- Supabase (PostgreSQL database, authentication, row-level security)
 
-1. Dashboard: total outstanding amount, payments due this week, overdue customers (in red), and total collected this month.
+## Live App
 
-2. Customers: add, edit and search customers (name, phone, address, CNIC/ID number).
+https://qists-manager.lovable.app
 
-3. New Sale: pick a customer, enter the product name, total price, down payment, number of months, and start date. Auto-calculate the monthly installment and create the full payment schedule.
-
-4. Customer Detail: sale info, schedule with paid/unpaid/overdue status, and a "Record Payment" button that logs the amount and date.
-
-5. Reminders: a list of customers with due or overdue installments, each with a button that opens WhatsApp with a pre-filled message: "Assalam o Alaikum [Name], your installment of Rs. [amount] was due on [date]. Please pay at your earliest."
-
-
-
-Design: clean, simple, large buttons, works well on a phone, and supports English with Rs. currency.
-
-Use Supabase for the database, with row-level security so each shop owner only sees their own data.
-
-This project was built with [Lovable](https://lovable.dev).
-
-**Live app**: https://qists-manager.lovable.app
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/f6c6bb65-d4e7-47d5-942d-1a55e5a86508).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
-```
+Built with Lovable.
