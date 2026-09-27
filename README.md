@@ -2,12 +2,14 @@
 
 Installment Hub is a mobile-friendly web app for small shops that sell products on monthly installments. Shop owners manage their customers, automatically generate a fair monthly payment schedule when a sale is made, record payments as they come in, and send WhatsApp reminders when an installment is due — all from one simple dashboard.
 
+See [TESTING.md](TESTING.md) for the full testing and security findings report.
+
 ## Screenshots
 
 ![Login](screenshots/login.png)
 **Login**
 
-![Dashboard](screenshots/dashboard.png)
+![Dashboard](IMG_20260927_043220.jpg)
 **Dashboard**
 
 ![Add Customer](screenshots/add-customer.png)
